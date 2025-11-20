@@ -11,8 +11,8 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,8 +38,32 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# B2B Streaming Platform Schemas
+
+class Channel(BaseModel):
+    """
+    Channels collection schema
+    Collection name: "channel"
+    """
+    name: str = Field(..., description="Channel display name")
+    slug: str = Field(..., description="URL-friendly identifier")
+    description: Optional[str] = Field(None, description="Short description")
+    logo_url: Optional[HttpUrl] = Field(None, description="Logo image URL")
+    categories: List[str] = Field(default_factory=list, description="Categories or tags")
+    is_live: bool = Field(False, description="Currently broadcasting live")
+    viewer_count: int = Field(0, ge=0, description="Current viewers")
+
+class DemoRequest(BaseModel):
+    """
+    Demo requests collection schema
+    Collection name: "demorequest"
+    """
+    company: str = Field(..., description="Company name")
+    contact_name: str = Field(..., description="Primary contact full name")
+    email: str = Field(..., description="Work email")
+    use_case: Optional[str] = Field(None, description="Primary streaming use case")
+    audience_size: Optional[str] = Field(None, description="Estimated audience size")
+    notes: Optional[str] = Field(None, description="Additional context")
 
 # Note: The Flames database viewer will automatically:
 # 1. Read these schemas from GET /schema endpoint
